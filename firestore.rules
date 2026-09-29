@@ -1,0 +1,95 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow get: if isSignedIn();
+      allow list: if false;
+      allow create: if isOwner(userId)
+        && isValidId(userId)
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() <= 100;
+      allow update: if isOwner(userId)
+        && request.resource.data.userId == resource.data.userId
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() <= 100;
+      allow delete: if false;
+    }
+
+    // User Preferences (Paper texture, etc.)
+    match /user_preferences/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create, update: if isOwner(userId)
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.textureType is string
+        && request.resource.data.opacity is number
+        && request.resource.data.blendMode is string;
+      allow delete: if isOwner(userId);
+    }
+
+    // Saved Lyria Music Tracks
+    match /saved_tracks/{trackId} {
+      allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn()
+        && isValidId(trackId)
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.title is string
+        && request.resource.data.title.size() <= 150
+        && request.resource.data.prompt is string
+        && request.resource.data.prompt.size() <= 1000
+        && request.resource.data.model in ['lyria-3-clip-preview', 'lyria-3-pro-preview']
+        && request.resource.data.audioData is string;
+      allow update: if false;
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    // Saved Grounded Research Items
+    match /saved_research/{researchId} {
+      allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn()
+        && isValidId(researchId)
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.query is string
+        && request.resource.data.query.size() <= 500
+        && request.resource.data.topic is string
+        && request.resource.data.topic.size() <= 100
+        && request.resource.data.summary is string;
+      allow update: if false;
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    // Favorite 90s Bus Driver & Theka Songs
+    match /favorite_tracks/{favId} {
+      allow get, list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.trackTitle is string
+        && request.resource.data.trackTitle.size() <= 200
+        && request.resource.data.videoId is string;
+      allow update: if false;
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+  }
+}

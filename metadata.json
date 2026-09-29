@@ -1,0 +1,8 @@
+{
+  "name": "Smriti 1989 - Retro Indian 2D Painted Background",
+  "description": "Hand-painted 2D background artwork of an ordinary 1980s-90s Indian street, retro bus, and auto-rickshaw crafted with opaque gouache shapes and silhouettes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

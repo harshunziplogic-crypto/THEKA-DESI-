@@ -1,0 +1,162 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Public profile information for an authenticated user.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Unique Firebase Authentication UID."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Display name of the user."
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "Avatar photo URL from Google Auth."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO timestamp of account creation."
+        }
+      },
+      "required": ["userId", "displayName", "createdAt"]
+    },
+    "SavedTrack": {
+      "title": "SavedTrack",
+      "description": "AI-generated retro music clip or full-length track created via Lyria.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the generated track."
+        },
+        "userId": {
+          "type": "string",
+          "description": "UID of the user who generated this track."
+        },
+        "title": {
+          "type": "string",
+          "description": "Name or title for the track."
+        },
+        "prompt": {
+          "type": "string",
+          "description": "Prompt used to synthesize the audio."
+        },
+        "model": {
+          "type": "string",
+          "description": "Model used, e.g. lyria-3-clip-preview or lyria-3-pro-preview."
+        },
+        "style": {
+          "type": "string",
+          "description": "Musical style/genre tag."
+        },
+        "durationSeconds": {
+          "type": "number",
+          "description": "Length of audio in seconds."
+        },
+        "lyrics": {
+          "type": "string",
+          "description": "Generated or attached lyrics/notes."
+        },
+        "audioData": {
+          "type": "string",
+          "description": "Base64 data URI of the generated WAV audio."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of generation."
+        }
+      },
+      "required": ["id", "userId", "title", "prompt", "model", "audioData", "createdAt"]
+    },
+    "SavedResearch": {
+      "title": "SavedResearch",
+      "description": "Archival research notes grounded with Google Search data on 1980s Indian transit & cassette culture.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the research note."
+        },
+        "userId": {
+          "type": "string",
+          "description": "UID of the user who saved the research."
+        },
+        "query": {
+          "type": "string",
+          "description": "The search query used."
+        },
+        "topic": {
+          "type": "string",
+          "description": "Short topic label (e.g. Vintage Bus Lines, Cassette Boomboxes, Auto-Rickshaw Design)."
+        },
+        "summary": {
+          "type": "string",
+          "description": "Detailed verified historical facts grounded via Google Search."
+        },
+        "sources": {
+          "type": "array",
+          "description": "Citations and grounding sources."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of research."
+        }
+      },
+      "required": ["id", "userId", "query", "topic", "summary", "createdAt"]
+    },
+    "UserPreferences": {
+      "title": "UserPreferences",
+      "description": "Persisted paper grain texture and canvas viewing preferences.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "UID of the owner."
+        },
+        "textureType": {
+          "type": "string",
+          "description": "Paper grain preset ID."
+        },
+        "opacity": {
+          "type": "number",
+          "description": "Grain opacity between 0.1 and 0.8."
+        },
+        "blendMode": {
+          "type": "string",
+          "description": "Blend mode used for canvas overlay."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of last preference change."
+        }
+      },
+      "required": ["userId", "textureType", "opacity", "blendMode", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Public profile documents for authenticated users."
+    },
+    "/saved_tracks/{trackId}": {
+      "schema": "SavedTrack",
+      "description": "User generated music tracks and clips from Lyria."
+    },
+    "/saved_research/{researchId}": {
+      "schema": "SavedResearch",
+      "description": "Grounded historical search queries and research summaries."
+    },
+    "/user_preferences/{userId}": {
+      "schema": "UserPreferences",
+      "description": "User customized canvas paper grain and visual settings."
+    }
+  }
+}
